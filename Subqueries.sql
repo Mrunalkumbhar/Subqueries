@@ -39,3 +39,128 @@ where dept_id=6 and employee_id in
 ( select employee_id from employee_demographics 
 where age > 30);
 
+-- Practics subqueries
+
+-- Q1 Find employees older than average age
+SELECT first_name, age
+FROM employee_demographics
+WHERE age >
+(
+    SELECT AVG(age)
+    FROM employee_demographics
+);
+
+-- Q2 Find employees belonging to department 1
+SELECT *
+FROM employee_salary
+WHERE dept_id IN
+(
+    SELECT department_id
+    FROM parks_departments
+    WHERE department_name = 'Parks and Recreation'
+);
+
+-- Q3 Find employees working in the department with highest average salary
+SELECT *
+FROM employee_salary
+WHERE dept_id =
+(
+    SELECT dept_id
+    FROM employee_salary
+    GROUP BY dept_id
+    ORDER BY AVG(salary) DESC
+    LIMIT 1
+);
+
+-- Q4 Find employees earning the maximum salary
+SELECT *
+FROM employee_salary
+WHERE salary =
+(
+    SELECT MAX(salary)
+    FROM employee_salary
+);
+
+-- Q5 Find employees earning less than the average salary.
+select * from employee_salary
+where salary<
+(select avg(salary) from employee_salary);
+
+-- Q6 Find employees whose age is equal to the minimum age.
+select * from employee_demographics
+where age=(
+select min(age) from employee_demographics);
+
+-- Q7 Find employees whose salary is greater than the average salary.
+
+select * from employee_salary
+where salary>
+(select avg(salary) from employee_salary);
+
+-- Q8 Find employees working in departments that have more than 2 employees.
+select  * from employee_salary
+where dept_id in (
+select dept_id from employee_salary
+group by dept_id
+having count(*)>2)
+;
+
+-- Q9 Find employees whose salary is equal to the second-highest salary.
+select * from employee_salary
+where salary=(
+select salary from employee_salary
+order by salary desc
+limit 1,1);
+
+-- Q10 Find departments whose average salary is greater than 60,000.
+select * from parks_departments
+where department_id in (
+select dept_id from employee_salary
+group by dept_id
+having avg(salary)>60000);
+
+-- Advanced Subquery Practice Set
+
+-- Q11 Find employees whose salary is above the average salary of their own department.
+select * from employee_salary sal1
+where salary> (
+select avg(salary) from employee_salary sal2
+where sal1.dept_id=sal2.dept_id);
+
+-- Q12 Find employees who work in the same department as the highest-paid employee.
+select * from employee_salary
+where dept_id=(
+select dept_id from employee_salary
+order by salary desc
+limit 1);
+
+
+-- Q13 Find the department(s) with the maximum number of employees.
+select dept_id,count(*) emp_count
+ from employee_salary
+ group by dept_id
+having count(*)=(
+select max(emp_count) from 
+(SELECT COUNT(*) AS emp_count
+        FROM employee_salary
+        GROUP BY dept_id)t);
+
+-- Q14 Find employees whose age is above the average age of their gender.
+SELECT *
+FROM employee_demographics d1
+WHERE age >
+(
+    SELECT AVG(age)
+    FROM employee_demographics d2
+    WHERE d1.gender = d2.gender
+);
+-- Q15 Find the third-highest salary using a subquery.
+select * from employee_salary
+where salary=(
+select * from employee_salary
+order by salary desc
+limit 2,1);
+
+
+
+
