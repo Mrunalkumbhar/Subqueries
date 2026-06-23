@@ -161,6 +161,41 @@ select * from employee_salary
 order by salary desc
 limit 2,1);
 
+-- Q16 Find employees whose salary is lower than the highest salary in their department.
+select * from employee_salary
+where salary<(
+select max(salary) from employee_salary);
+
+-- Q17 Find employees working in departments where the average salary is greater than 60,000.
+select * from employee_salary
+where dept_id in (
+select dept_id from employee_salary
+group by dept_id
+having avg(salary)>60000
+);
+-- Q18 Find employees whose age is equal to the maximum age in their gender group.
+select * from employee_demographics
+where gender in (
+select gender from employee_demographics
+group by gender
+having age=max(age));
+
+-- Q19 Find employees who belong to departments having more employees 
+-- than the average department size.
+select dept_id ,count(*) as no_of_emp from employee_salary
+group by dept_id
+having count(*)>(
+select avg(emp_count) from (
+select count(*) as emp_count from employee_salary
+GROUP BY dept_id
+)dept_count);
+
+-- Q20 Find employees whose salary is greater than the minimum salary of department 1.
+
+select * from employee_salary
+where salary>(
+select min(salary) from employee_salary 
+where dept_id =1 );
 
 
 
