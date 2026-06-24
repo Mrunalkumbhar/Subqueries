@@ -197,5 +197,66 @@ where salary>(
 select min(salary) from employee_salary 
 where dept_id =1 );
 
+-- Q1. Find employees older than the average age.
+select * from employee_demographics
+where age>
+(
+select avg(age) from employee_demographics
+);
+-- Q2. Find employees belonging to department 1.
+select * from employee_salary
+where dept_id in (
+select dept_id from employee_salary
+where dept_id=1);
 
+-- Q3. Find employees working in the department with the highest average salary.
+select * from employee_salary
+where dept_id=(
+select dept_id from employee_salary
+group by dept_id
+order by avg(salary) desc
+limit 1);
+-- Q4. Find employees whose salary is above the company average salary.
+select * from employee_salary
+where salary >(
+select avg(salary) from employee_salary);
+-- Q4. Find employees whose salary is above the company average salary.
+select * from employee_salary
+where salary >(
+select avg(salary) from employee_salary);
+-- Q5. Find employees earning the maximum salary in the company.
+select * from employee_salary
+where salary =(
+select max(salary) from employee_salary);
+-- Q6. Find employees earning the second-highest salary.
+select * from employee_salary
+where salary =
+(
+select distinct salary from employee_salary
+order by salary desc
+limit 1,1
+);
+-- Q7. Find employees earning the third-highest salary.
+select * from employee_salary
+where salary=(
+select distinct salary from employee_salary
+order by salary desc
+limit 2,1);
+-- Q8. Find employees whose salary is below the company average salary.
+select * from employee_salary
+where salary<(
+select avg(salary) from employee_salary);
+-- Q9. Find employees whose age is greater than the average age of their gender group.
+select * from employee_demographics e1
+where age >(
+select avg(age) from employee_demographics e2
+ WHERE e1.gender = e2.gender
+
+);
+-- Q10. Find employees who belong to departments with more than 3 employees.
+select * from employee_salary
+where dept_id in (
+select dept_id  from employee_salary
+group by dept_id
+having count(*)>3);
 
