@@ -260,3 +260,69 @@ select dept_id  from employee_salary
 group by dept_id
 having count(*)>3);
 
+-- Intermediate Subqueries
+
+-- Q11. Find employees whose salary is greater than the average salary of their department.
+select * from employee_salary e1
+where salary> (
+select avg(salary) from employee_salary e2
+where e1.dept_id=e2.dept_id)
+;
+-- Q12. Find departments where the average salary is less than the company average salary.
+select dept_id from employee_salary
+group by dept_id
+having avg(salary)< (
+select avg(salary) from employee_salary);
+-- Q13. Find employees working in the department having the highest number of employees.
+select * from employee_salary
+where dept_id = (
+select dept_id from employee_salary
+group by dept_id
+order by count(*) desc
+limit 1);
+-- Q14. Find employees earning the minimum salary in the company.
+select * from employee_salary
+where salary=(
+select min(salary) from employee_salary);
+
+-- Q15. Find employees whose age is equal to the minimum age in their gender group.
+select * from employee_demographics e1
+where age =(
+select min(age) from employee_demographics e2
+where e1.gender=e2.gender);
+
+-- Q16. Find employees whose salary is lower than the highest salary in their department.
+select * from employee_salary e1
+where salary <(
+select max(salary) from employee_salary e2
+where e1.dept_id=e2.dept_id);
+-- Q17. Find employees working in departments where the average salary is greater than 60,000.
+select * from employee_salary
+where dept_id in(
+select dept_id from employee_salary
+group by dept_id
+having avg(salary)>60000);
+-- Q18. Find employees whose age is equal to the maximum age in their gender group.
+select * from employee_demographics e1
+where age= (
+select max(age) from employee_demographics e2
+where e1.gender=e2.gender);
+-- Q19. Find employees who belong to departments having more employees 
+-- than the average department size.
+select * from employee_salary
+where dept_id in(
+select dept_id from employee_salary
+group by dept_id
+having count(*)>(
+select avg(emp_count)
+from (
+select count(*) as emp_count
+from employee_salary
+group by dept_id
+)dept_size));
+-- Q20. Find employees whose salary is greater than the minimum salary of department 1.
+select * from employee_salary
+where salary>(
+select min(salary) from employee_salary
+where dept_id=1);
+
