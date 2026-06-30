@@ -326,3 +326,83 @@ where salary>(
 select min(salary) from employee_salary
 where dept_id=1);
 
+-- Advanced Subqueries
+
+-- Q21. Find employees whose salary is greater than the average salary of all employees.
+select * from employee_salary
+where salary>(
+select avg(salary) from employee_salary);
+-- Q22. Find employees whose age is less than the average age of all employees.
+select * from employee_demographics e1
+where age<(
+select avg(age) from employee_demographics e2
+);
+-- Q23. Find employees working in departments where the maximum salary is greater than 70,000.
+select * from employee_salary
+where dept_id in (
+select dept_id from employee_salary
+group by dept_id
+having max(salary)>70000);
+-- Q24. Find employees whose salary is equal to the highest salary in their department.
+select * from employee_salary e1
+where salary= (
+select max(salary) from employee_salary e2
+where e1.dept_id=e2.dept_id);
+-- Q25. Find employees whose salary is lower than the average salary of their department.
+select * from employee_salary e1
+where salary<(
+select avg(salary) from employee_salary e2
+WHERE e1.dept_id = e2.dept_id
+);
+-- Q26. Find departments whose average employee age is greater than the overall average age.
+SELECT dept_id
+FROM employee_salary e1
+JOIN employee_demographics e2
+ON e1.employee_id = e2.employee_id
+GROUP BY dept_id
+HAVING AVG(age) >
+(
+    SELECT AVG(age)
+    FROM employee_demographics
+);
+-- Q27. Find employees who earn the second-highest salary in the company.
+select * from employee_salary
+where salary=(
+select distinct salary from employee_salary
+order by salary desc
+limit 1,1);
+-- Q28. Find employees belonging to the department with the highest average salary.
+select * from employee_salary e1
+where dept_id= (
+select dept_id from employee_salary
+group by dept_id
+order by avg(salary) desc
+limit 1
+);
+-- Q29. Find employees whose salary is greater than the average salary of 
+-- employees having the same gender.
+
+SELECT *
+FROM employee_salary e1
+JOIN employee_demographics e2
+    ON e1.employee_id = e2.employee_id
+WHERE e1.salary >
+(
+    SELECT AVG(e3.salary)
+    FROM employee_salary e3
+    JOIN employee_demographics e4
+        ON e3.employee_id = e4.employee_id
+    WHERE e2.gender = e4.gender
+);
+-- Q30. Find departments that have more employees than every other department.
+
+select * from employee_salary 
+where dept_id in (
+select dept_id from employee_salary
+group by dept_id
+having count(*) =
+(select max(emp_count) from
+(select count(*) as emp_count from employee_salary
+group by dept_id 
+)as dept_size));
+
